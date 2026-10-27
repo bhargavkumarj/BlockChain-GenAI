@@ -43,7 +43,7 @@ export function AgreementPage({ id }: { id: number }) {
 
   return (
     <div className="mx-auto max-w-[1320px] px-4 sm:px-6">
-      <header className="grid gap-8 border-b border-rule py-10 lg:grid-cols-[1fr_auto] lg:py-14">
+      <header className="grid grid-cols-1 gap-8 border-b border-rule py-10 lg:grid-cols-[1fr_auto] lg:py-14">
         <div className="min-w-0">
           <p className="label">
             {agreementNumber(agreement.id)} · Sealed {formatDate(agreement.createdAt, false)} · {CHAIN_LABEL}
@@ -57,10 +57,13 @@ export function AgreementPage({ id }: { id: number }) {
               {STATUS_COPY[agreement.status].label}
             </Pill>
             <span className="tabular font-mono">
-              {formatAmount(agreement.total, token.decimals)} <span className="text-ink-3">{token.symbol} escrowed</span>
+              {formatAmount(agreement.total, token.decimals)}{" "}
+              <span className="text-ink-3">
+                {token.symbol} {agreement.status === "Closed" ? "settled" : agreement.status === "Cancelled" ? "refunded" : "in escrow"}
+              </span>
             </span>
           </div>
-          <dl className="mt-6 grid gap-4 sm:grid-cols-2 lg:max-w-2xl">
+          <dl className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:max-w-2xl">
             <div>
               <dt className="label">Client{draft && draft.clientLabel !== "Client" ? ` · ${draft.clientLabel}` : ""}</dt>
               <dd className="mt-1">
@@ -83,7 +86,7 @@ export function AgreementPage({ id }: { id: number }) {
         </div>
       </header>
 
-      <div className="grid gap-12 py-10 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid grid-cols-1 gap-12 py-10 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="min-w-0">
           <SectionLabel n="I">Milestones</SectionLabel>
           <div className="mt-2">

@@ -98,6 +98,8 @@
     color: var(--ink);
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "cv11";
+    /* Long unbroken strings (CIDs, hashes, addresses) wrap instead of widening the page. */
+    overflow-wrap: break-word;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -141,6 +143,12 @@
   button {
     font: inherit;
     color: inherit;
+  }
+
+  /* Grid items default to min-width: auto, which lets wide content (diagrams, hashes) stretch the track and
+     overflow small screens. Zero specificity, so an explicit min-w-* utility still wins. */
+  :where(.grid) > * {
+    min-width: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -406,6 +414,15 @@
 }
 .animate-ink-in {
   animation: ink-in 520ms var(--ease-out-quart) both;
+}
+/* The ruled split grows out from the even 50/50 line. */
+@keyframes split {
+  from {
+    width: 50%;
+  }
+}
+.animate-split {
+  animation: split 1400ms var(--ease-out-quart) 150ms both;
 }
 .animate-rise {
   animation: rise 700ms var(--ease-out-quart) both;

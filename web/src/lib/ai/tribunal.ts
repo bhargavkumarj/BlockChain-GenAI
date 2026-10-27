@@ -15,6 +15,7 @@ import { buildCaseFile } from "@/lib/server/case-file";
 import { latestTimestamp, requirePactum, signRuling } from "@/lib/server/chain";
 import { isDurableKV, kv } from "@/lib/server/kv";
 import { pinJSON } from "@/lib/server/ipfs";
+import { clampPercent, fence, median } from "@/lib/tribunal-math";
 import { serverEnv } from "@/lib/server/env";
 import { type Effort, aiMode, generateObject, modelName } from "./engine";
 import { PROMPT_VERSION, jurorSystem, opinionSystem } from "./prompts";
@@ -40,11 +41,6 @@ export async function existingRuling(a: AgreementView, index: number) {
   return kv.get<SignedRuling>(rulingKey(a, index));
 }
 
-export function median(values: number[]) {
-  const sorted = [...values].sort((x, y) => x - y);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 ? sorted[mid]! : Math.round((sorted[mid - 1]! + sorted[mid]!) / 2);
-}
 
 /**
  * Convene the tribunal for one disputed milestone and stream its deliberation.
@@ -130,7 +126,7 @@ export async function convene(a: AgreementView, index: number, send: SendFn, sig
         {
           type: "text",
           text: `<opinions>\n${opinions
-            .map((o) => `<juror name="${o.name}" award="${o.opinion.providerSharePercent}">\n${JSON.stringify(o.opinion)}\n</juror>`)
+            .map((o) => `<juror name="${o.name}" award="${o.opinion.providerSharePercent}">\n${fence(JSON.stringify(o.opinion))}\n</juror>`)
             .join("\n")}\n</opinions>\nWrite the opinion of the tribunal for milestone ${roman(index + 1)}.`,
         },
       ],
@@ -188,8 +184,4 @@ export async function convene(a: AgreementView, index: number, send: SendFn, sig
   } finally {
     await kv.del(lock);
   }
-}
-
-function clampPercent(n: number) {
-  return Math.max(0, Math.min(100, Math.round(n)));
 }

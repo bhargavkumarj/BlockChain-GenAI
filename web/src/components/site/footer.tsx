@@ -17,7 +17,7 @@ export function Footer({ big = false }: { big?: boolean }) {
           <p className="label mt-4">Latin: agreements must be kept. Now they can be.</p>
         </div>
       )}
-      <div className="mx-auto grid max-w-[1320px] gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="mx-auto grid grid-cols-1 max-w-[1320px] gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="flex items-start gap-3">
           <Mark size={30} />
           <p className="max-w-xs text-sm leading-relaxed text-ink-3">

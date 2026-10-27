@@ -16,7 +16,7 @@ export default async function PrecedentsPage() {
   const precedents = await readPrecedents();
   return (
     <div className="mx-auto max-w-[1320px] px-4 py-12 sm:px-6 lg:py-16">
-      <div className="grid gap-8 border-b border-ink pb-10 lg:grid-cols-[1fr_380px] lg:items-end">
+      <div className="grid grid-cols-1 gap-8 border-b border-ink pb-10 lg:grid-cols-[1fr_380px] lg:items-end">
         <div>
           <p className="label">Reports of the Pactum tribunal · vol. I</p>
           <h1 className="display mt-3 text-[clamp(3rem,7vw,6rem)]">Precedents</h1>
@@ -47,7 +47,7 @@ export default async function PrecedentsPage() {
               <li key={`${p.agreementId}-${p.milestone}`} className="border-b border-rule">
                 <Link
                   href={`/a/${p.agreementId}#m${p.milestone}`}
-                  className="group grid gap-6 py-8 md:grid-cols-[150px_1fr_220px]"
+                  className="group grid grid-cols-1 gap-6 py-8 md:grid-cols-[150px_1fr_220px]"
                 >
                   <div className="flex items-start gap-3 md:flex-col">
                     <Seal seed={p.seed} number={p.agreementId} size={72} className="text-seal" />

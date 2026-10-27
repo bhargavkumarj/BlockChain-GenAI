@@ -202,7 +202,7 @@ export function TribunalSession({
 
 export function Bench({ jurors }: { jurors: Record<string, JurorState> }) {
   return (
-    <div className="grid gap-px border border-rule bg-rule md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-px border border-rule bg-rule md:grid-cols-3">
       {JURORS.map((j) => {
         const state = jurors[j.id] ?? { status: "waiting" };
         const o = state.opinion;

@@ -93,12 +93,7 @@ export function TxLink({ hash }: { hash: string }) {
 
 /** Provider share vs. client share of a milestone, as a single ruled bar. */
 export function SplitBar({ providerBps, animate = false }: { providerBps: number; animate?: boolean }) {
-  const [shown, setShown] = useState(animate ? 5000 : providerBps);
-  useEffect(() => {
-    if (!animate) return setShown(providerBps);
-    const t = setTimeout(() => setShown(providerBps), 120);
-    return () => clearTimeout(t);
-  }, [providerBps, animate]);
+  const shown = providerBps;
   return (
     <div>
       <div className="flex justify-between font-mono text-[0.7rem] uppercase tracking-wider">
@@ -107,7 +102,7 @@ export function SplitBar({ providerBps, animate = false }: { providerBps: number
       </div>
       <div className="relative mt-2 h-2.5 border border-ink/80">
         <div
-          className="absolute inset-y-0 left-0 bg-ledger transition-[width] duration-[1400ms] ease-[var(--ease-out-quart)]"
+          className={`absolute inset-y-0 left-0 bg-ledger transition-[width] duration-700 ${animate ? "animate-split" : ""}`}
           style={{ width: `${shown / 100}%` }}
         />
         <div className="absolute inset-y-[-5px] left-1/2 w-px bg-ink/40" aria-hidden />

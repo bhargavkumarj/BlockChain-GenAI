@@ -20,7 +20,7 @@ export default function ProtocolPage() {
   const contract = PACTUM_ADDRESS ? explorerAddress(PACTUM_ADDRESS) : undefined;
   return (
     <div className="mx-auto max-w-[1320px] px-4 py-12 sm:px-6 lg:py-16">
-      <header className="grid gap-8 border-b border-ink pb-12 lg:grid-cols-[1fr_340px] lg:items-end">
+      <header className="grid grid-cols-1 gap-8 border-b border-ink pb-12 lg:grid-cols-[1fr_340px] lg:items-end">
         <div>
           <p className="label">The protocol · v1</p>
           <h1 className="display mt-3 text-[clamp(3rem,7vw,6.5rem)]">
@@ -35,7 +35,7 @@ export default function ProtocolPage() {
         </p>
       </header>
 
-      <div className="grid gap-12 py-12 lg:grid-cols-[220px_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-12 py-12 lg:grid-cols-[220px_minmax(0,1fr)]">
         <nav className="hidden lg:block" aria-label="On this page">
           <ol className="sticky top-24 grid gap-2 font-mono text-[0.75rem] uppercase tracking-wider">
             {TOC.map(([id, label], i) => (
@@ -52,7 +52,7 @@ export default function ProtocolPage() {
           <section id="lifecycle" className="scroll-mt-24">
             <SectionLabel n="1">Lifecycle</SectionLabel>
             <h2 className="display mt-6 text-5xl">Money moves only along these arrows.</h2>
-            <div className="mt-6 grid gap-6 text-ink-2 md:grid-cols-2">
+            <div className="mt-6 grid grid-cols-1 gap-6 text-ink-2 md:grid-cols-2">
               <p className="leading-relaxed">
                 A client funds the whole agreement up front. The provider accepts, then each milestone moves through its own state
                 machine. Every transition is a transaction guarded by the contract; there is no admin path to the escrow.
@@ -73,7 +73,7 @@ export default function ProtocolPage() {
           <section id="tribunal" className="scroll-mt-24">
             <SectionLabel n="2">The tribunal</SectionLabel>
             <h2 className="display mt-6 text-5xl">Three jurors, one median, every word on IPFS.</h2>
-            <ol className="mt-8 grid gap-px border border-rule bg-rule md:grid-cols-2">
+            <ol className="mt-8 grid grid-cols-1 gap-px border border-rule bg-rule md:grid-cols-2">
               {[
                 ["Due process", "A dispute freezes the milestone. The tribunal may sit only once both sides have filed or the evidence window has closed, and the contract enforces the same rule."],
                 ["The record", "Terms, the on-chain timeline, the delivery and every filing are assembled into one case file. Text files are read in full; images and PDFs are attached for the model to see."],
@@ -89,7 +89,7 @@ export default function ProtocolPage() {
                 </li>
               ))}
             </ol>
-            <div className="mt-8 grid gap-6 md:grid-cols-3">
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
               <Fact title="Prompt-injection hardened">
                 Party content is fenced and treated as evidence, never instructions. Any attempt to forge the record’s structure is
                 neutralised, and manipulation attempts are flagged and held against the party who made them.
@@ -144,7 +144,7 @@ export default function ProtocolPage() {
           <section id="contracts" className="scroll-mt-24">
             <SectionLabel n="4">Contracts</SectionLabel>
             <h2 className="display mt-6 text-5xl">Boring on purpose.</h2>
-            <ul className="mt-8 grid gap-x-10 gap-y-5 md:grid-cols-2">
+            <ul className="mt-8 grid grid-cols-1 gap-x-10 gap-y-5 md:grid-cols-2">
               {[
                 ["Exact solvency", "An invariant test drives thousands of random user actions and checks the escrow always holds exactly the open milestones plus accrued fees."],
                 ["Pull-payment fallback", "Payouts are pushed; if a receiver reverts (a contract wallet, a blacklisted address), the amount is credited for withdrawal instead of blocking the counterparty."],
@@ -177,7 +177,7 @@ export default function ProtocolPage() {
             <figure className="mt-8 overflow-x-auto border border-rule bg-sheet p-6">
               <ArchitectureDiagram />
             </figure>
-            <div className="mt-8 grid gap-6 md:grid-cols-4">
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-4">
               <Fact title="Scribe">Drafts agreements from one sentence as schema-validated JSON, streamed into the page as it is written.</Fact>
               <Fact title="Clerk">Answers questions about a specific agreement, grounded in its terms and live on-chain state.</Fact>
               <Fact title="Inspector">Checks a delivery against its acceptance criteria before the client approves. Advice, not a ruling.</Fact>
@@ -273,41 +273,45 @@ function ArchitectureDiagram() {
   const box = (x: number, y: number, w: number, h: number, title: string, lines: string[], accent = false) => (
     <g>
       <rect x={x} y={y} width={w} height={h} fill="var(--sheet)" stroke={accent ? "var(--seal)" : "var(--ink)"} strokeWidth={1.4} />
-      <text x={x + 14} y={y + 24} fontFamily="var(--font-serif)" fontSize="20" fill="var(--ink)">
+      <text x={x + 14} y={y + 26} fontFamily="var(--font-serif)" fontSize="20" fill="var(--ink)">
         {title}
       </text>
       {lines.map((l, i) => (
-        <text key={l} x={x + 14} y={y + 50 + i * 19} fontFamily="var(--font-mono)" fontSize="11" fill="var(--ink-2)">
+        <text key={l} x={x + 14} y={y + 50 + i * 18} fontFamily="var(--font-mono)" fontSize="10.5" fill="var(--ink-2)">
           {l}
         </text>
       ))}
     </g>
   );
+  const label = (x: number, y: number, text: string) => (
+    <text x={x} y={y} textAnchor="middle" fontFamily="var(--font-sans)" fontSize="11" fill="var(--ink-2)">
+      {text}
+    </text>
+  );
   return (
-    <svg viewBox="0 0 900 330" className="w-full min-w-[760px]" role="img" aria-label="System architecture">
+    <svg viewBox="0 0 900 370" className="w-full min-w-[760px]" role="img" aria-label="System architecture">
       <defs>
         <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M0 0 L10 5 L0 10 z" fill="var(--ink-3)" />
         </marker>
       </defs>
-      {box(20, 30, 230, 150, "Browser", ["Next.js 16 · React 19", "wagmi 3 · viem", "guest wallet · permits", "streams AI over SSE"])}
-      {box(335, 30, 230, 150, "Pactum server", ["Scribe · Clerk · Inspector", "Tribunal (3 jurors + clerk)", "Ada (agent wallet)", "EIP-712 signer"], true)}
-      {box(650, 30, 230, 150, "Base", ["Pactum.sol escrow", "TestUSD (EIP-2612)", "rulings verified on-chain", "portable track records"])}
-      {box(335, 220, 230, 90, "Claude", ["Opus 5.5 · structured outputs", "streaming · vision · fallbacks"])}
-      {box(650, 220, 230, 90, "IPFS", ["terms · deliveries · evidence", "full tribunal records"])}
-      {box(20, 220, 230, 90, "KV", ["rate limits · tribunal locks", "one ruling per dispute"])}
-      <g stroke="var(--ink-3)" strokeWidth={1.2} fill="none" markerEnd="url(#arrow2)">
-        <path d="M250 90 L331 90" />
-        <path d="M335 120 L254 120" />
-        <path d="M250 150 C450 210 560 200 646 150" />
-        <path d="M565 90 L646 90" />
-        <path d="M450 180 L450 216" />
-        <path d="M565 260 L646 260" />
-        <path d="M335 265 L254 265" />
+      {box(20, 70, 220, 130, "Browser", ["Next.js 16 · React 19", "wagmi 3 · viem", "guest wallet · permits", "AI streamed over SSE"])}
+      {box(340, 70, 220, 130, "Pactum server", ["Scribe · Clerk · Inspector", "Tribunal: 3 jurors + clerk", "Ada (own wallet)", "EIP-712 ruling signer"], true)}
+      {box(660, 70, 220, 130, "Base", ["Pactum.sol escrow", "TestUSD (EIP-2612)", "rulings verified on-chain", "portable track records"])}
+      {box(130, 270, 200, 80, "Claude", ["Opus 5.5 · structured outputs", "streaming · vision"])}
+      {box(350, 270, 200, 80, "IPFS", ["terms · deliveries · evidence", "full tribunal records"])}
+      {box(570, 270, 200, 80, "KV", ["rate limits · session locks", "one ruling per dispute"])}
+      <g stroke="var(--ink-3)" strokeWidth={1.2} fill="none">
+        <path d="M244 135 L336 135" markerStart="url(#arrow2)" markerEnd="url(#arrow2)" />
+        <path d="M564 135 L656 135" markerEnd="url(#arrow2)" />
+        <path d="M130 66 C130 12 770 12 770 66" markerEnd="url(#arrow2)" />
+        <path d="M410 200 L250 266" markerEnd="url(#arrow2)" />
+        <path d="M450 200 L450 266" markerEnd="url(#arrow2)" />
+        <path d="M490 200 L650 266" markerEnd="url(#arrow2)" />
       </g>
-      <text x="290" y="82" textAnchor="middle" fontFamily="var(--font-sans)" fontSize="11" fill="var(--ink-2)">API</text>
-      <text x="606" y="82" textAnchor="middle" fontFamily="var(--font-sans)" fontSize="11" fill="var(--ink-2)">reads · agent txs</text>
-      <text x="450" y="212" textAnchor="middle" fontFamily="var(--font-sans)" fontSize="11" fill="var(--ink-2)">wallet transactions</text>
+      {label(290, 125, "API · SSE")}
+      {label(610, 125, "reads · txs")}
+      {label(450, 30, "wallet transactions: fund, deliver, dispute, execute rulings")}
     </svg>
   );
 }

@@ -9,6 +9,7 @@ import {
   type FileRef,
   TermsDocument,
 } from "@/lib/schemas";
+import { fence } from "@/lib/tribunal-math";
 import { readFilings } from "./chain";
 import { fetchCID, fetchJSON } from "./ipfs";
 
@@ -212,10 +213,6 @@ function isTextual(mediaType: string) {
   );
 }
 
-/** Neutralise anything that looks like one of the record's own tags, so a party cannot forge structure. */
-function fence(value: string) {
-  return value.replace(/<(\/?)(record|agreement|delivery|filing|file|timeline|note|statement|milestone|clauses|parties|summary|links)\b/gi, "‹$1$2");
-}
 
 function attr(value: string) {
   return value.replace(/["<>]/g, "'");

@@ -1,13 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark" | null>(null);
-
-  useEffect(() => {
-    setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
-  }, []);
+  const theme = useSyncExternalStore(subscribe, readTheme, () => null);
 
   function toggle() {
     const next = theme === "dark" ? "light" : "dark";
@@ -15,7 +11,6 @@ export function ThemeToggle() {
     try {
       localStorage.setItem("pactum.theme", next);
     } catch {}
-    setTheme(next);
   }
 
   return (
@@ -32,4 +27,15 @@ export function ThemeToggle() {
       </svg>
     </button>
   );
+}
+
+/** The theme lives on <html data-theme>, set before paint by the inline script in the root layout. */
+function readTheme() {
+  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+}
+
+function subscribe(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  return () => observer.disconnect();
 }

@@ -38,8 +38,8 @@ export function DraftStudio() {
   const [prompt, setPrompt] = useState(initial);
   const [instruction, setInstruction] = useState("");
   const [draft, setDraft] = useState<AgreementDraft | null>(null);
-  const [partial, setPartial] = useState<PartialDraft | null>(null);
-  const [phase, setPhase] = useState<Phase>("idle");
+  const [partial, setPartial] = useState<PartialDraft | null>(initial.trim().length >= 8 ? {} : null);
+  const [phase, setPhase] = useState<Phase>(initial.trim().length >= 8 ? "drafting" : "idle");
   const [error, setError] = useState<string | null>(null);
   const [meta, setMeta] = useState<{ model: string; simulated: boolean; ms: number } | null>(null);
   const [elapsed, setElapsed] = useState(0);
@@ -58,21 +58,25 @@ export function DraftStudio() {
     return () => clearInterval(t);
   }, [phase]);
 
-  async function generate(revise?: string) {
+  function generate(revise?: string) {
     if (prompt.trim().length < 8) {
       setError("Describe the deal in a sentence or two.");
       return;
     }
     setError(null);
     setPhase("drafting");
+    if (!revise) setDraft(null);
+    setPartial((revise ? draft : null) ?? {});
+    void request(prompt, revise ? draft : null, revise);
+  }
+
+  /** Streams a draft from Scribe. Only touches state from stream callbacks, so it is safe to start in an effect. */
+  async function request(deal: string, base: AgreementDraft | null, revise?: string) {
     const t0 = Date.now();
     let buffer = "";
-    const base = revise ? draft : null;
-    if (!revise) setDraft(null);
-    setPartial(base ?? {});
     await stream.start(
       "/api/ai/draft",
-      revise && draft ? { prompt, current: draft, instruction: revise } : { prompt },
+      revise && base ? { prompt: deal, current: base, instruction: revise } : { prompt: deal },
       ({ event, data }) => {
         const d = data as Record<string, unknown>;
         if (event === "delta") {
@@ -102,8 +106,8 @@ export function DraftStudio() {
   // Start drafting straight away when arriving with ?q= (from the landing page). The cleanup aborts the
   // request, so StrictMode's mount → unmount → mount simply restarts it.
   useEffect(() => {
-    if (!initial) return;
-    void generate();
+    if (initial.trim().length < 8) return;
+    void request(initial, null);
     return () => stream.stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -127,14 +131,14 @@ export function DraftStudio() {
   const streaming = phase === "drafting";
 
   return (
-    <div className="mx-auto grid max-w-[1320px] gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[400px_1fr] lg:py-14">
+    <div className="mx-auto grid grid-cols-1 max-w-[1320px] gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[400px_1fr] lg:py-14">
       <aside className="lg:sticky lg:top-24 lg:self-start">
         <SectionLabel n="I">Describe the deal</SectionLabel>
         <form
           className="mt-5"
           onSubmit={(e) => {
             e.preventDefault();
-            void generate();
+            generate();
           }}
         >
           <label htmlFor="deal" className="sr-only">
@@ -145,7 +149,7 @@ export function DraftStudio() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) void generate();
+              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) generate();
             }}
             rows={5}
             placeholder="Who does what, for how much, by when…"
@@ -185,7 +189,7 @@ export function DraftStudio() {
               className="mt-4 flex gap-2"
               onSubmit={(e) => {
                 e.preventDefault();
-                if (instruction.trim()) void generate(instruction.trim());
+                if (instruction.trim()) generate(instruction.trim());
               }}
             >
               <input
@@ -205,7 +209,7 @@ export function DraftStudio() {
                   key={r}
                   type="button"
                   disabled={streaming}
-                  onClick={() => void generate(r)}
+                  onClick={() => generate(r)}
                   className="border border-rule px-2 py-1 text-xs text-ink-3 transition-colors hover:border-ink hover:text-ink disabled:opacity-50"
                 >
                   {r}
@@ -310,7 +314,7 @@ export function DraftStudio() {
 
       <section aria-live="polite" className="min-w-0">
         {shown ? (
-          <div className="grid gap-6 xl:grid-cols-[1fr_260px]">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_260px]">
             <AgreementDocument
               draft={shown}
               streaming={streaming}

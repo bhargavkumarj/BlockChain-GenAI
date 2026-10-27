@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Countdown, Notice, Pill, SplitBar } from "@/components/ui";
 import {
   type AgreementView,
@@ -36,10 +36,9 @@ export function MilestoneCard({
   focused: boolean;
   onChange: () => void;
 }) {
-  const [open, setOpen] = useState(focused || milestone.disputedAt > 0);
-  useEffect(() => {
-    if (focused || milestone.disputedAt > 0) setOpen(true);
-  }, [focused, milestone.disputedAt]);
+  const [expanded, setOpen] = useState(false);
+  // The milestone that needs attention, and any milestone with a dispute, is always shown in full.
+  const open = expanded || focused || milestone.disputedAt > 0;
   const token = tokenFor(agreement.token);
   const copy = PHASE_COPY[milestone.phase];
   const c = agreement.status === "Active" ? clock(agreement, milestone, now) : null;
@@ -164,7 +163,7 @@ function Rail({ agreement, milestone }: { agreement: AgreementView; milestone: M
               {i < steps.length - 1 && <span className={`h-px flex-1 ${steps[i + 1]!.at > 0 ? "bg-ink" : "bg-rule"}`} />}
             </div>
             <p className={`mt-2 font-mono text-[0.65rem] uppercase tracking-wider ${done ? "text-ink" : "text-ink-4"}`}>{s.label}</p>
-            <p className="font-mono text-[0.62rem] text-ink-4">{done ? formatDate(s.at) : "—"}</p>
+            <p className="hidden font-mono text-[0.62rem] text-ink-4 sm:block">{done ? formatDate(s.at) : "—"}</p>
           </li>
         );
       })}

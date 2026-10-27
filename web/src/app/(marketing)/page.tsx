@@ -29,7 +29,7 @@ export default async function Home() {
         {/* ───────────── Hero */}
         <section className="relative overflow-hidden border-b border-rule">
           <GridLines />
-          <div className="relative mx-auto grid max-w-[1320px] gap-14 px-4 pb-20 pt-14 sm:px-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:pb-28 lg:pt-20">
+          <div className="relative mx-auto grid grid-cols-1 max-w-[1320px] gap-14 px-4 pb-20 pt-14 sm:px-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:pb-28 lg:pt-20">
             <div className="animate-rise">
               <p className="label">№ 001 — A protocol for kept promises</p>
               <h1 className="display mt-6 text-[clamp(3.6rem,8.6vw,8.4rem)]">
@@ -90,7 +90,7 @@ export default async function Home() {
           <h2 className="display mt-6 max-w-5xl text-[clamp(2.5rem,5.6vw,5rem)]">
             The internet made it easy to work with strangers. It never made it <em className="text-seal">safe to pay them.</em>
           </h2>
-          <div className="mt-16 grid gap-px border border-rule bg-rule md:grid-cols-3">
+          <div className="mt-16 grid grid-cols-1 gap-px border border-rule bg-rule md:grid-cols-3">
             {[
               ["Platforms", "Marketplaces keep up to 20% of every invoice to stand in the middle, and their support desk is the court of appeal."],
               ["Courts", "Small cross-border disputes are too slow and too expensive to litigate. In practice, the party holding the money wins."],
@@ -113,7 +113,7 @@ export default async function Home() {
           <div className="mx-auto max-w-[1320px] px-4 py-24 sm:px-6 lg:py-28">
             <p className="label">§ II — How it works</p>
             <h2 className="display mt-6 text-[clamp(2.5rem,5vw,4.5rem)]">Four articles. That is the whole protocol.</h2>
-            <ol className="mt-16 grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+            <ol className="mt-16 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
               {[
                 ["I", "Draft", "Say it in a sentence. Scribe returns milestones, prices, deadlines and acceptance criteria a tribunal can actually check, with editorial notes on anything ambiguous.", <DraftArt key="d" />],
                 ["II", "Seal", "Terms are pinned to IPFS. One signature and one transaction lock the money in escrow on Base. Neither side can move it alone.", <SealArt key="s" />],
@@ -136,7 +136,7 @@ export default async function Home() {
 
         {/* ───────────── The tribunal */}
         <section className="bg-ink text-paper">
-          <div className="mx-auto grid max-w-[1320px] gap-16 px-4 py-24 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:py-32">
+          <div className="mx-auto grid grid-cols-1 max-w-[1320px] gap-16 px-4 py-24 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:py-32">
             <div>
               <p className="font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-paper/60">§ III — The tribunal</p>
               <h2 className="display mt-6 text-[clamp(2.5rem,5vw,4.75rem)]">
@@ -198,7 +198,7 @@ export default async function Home() {
         </section>
 
         {/* ───────────── Ada */}
-        <section className="mx-auto grid max-w-[1320px] gap-16 px-4 py-24 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:py-32">
+        <section className="mx-auto grid grid-cols-1 max-w-[1320px] gap-16 px-4 py-24 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:py-32">
           <div>
             <p className="label">§ IV — Meet Ada</p>
             <h2 className="display mt-6 text-[clamp(2.5rem,5vw,4.5rem)]">A freelancer with its own wallet.</h2>
@@ -241,7 +241,7 @@ export default async function Home() {
         <section className="border-t border-rule bg-paper-2">
           <div className="mx-auto max-w-[1320px] px-4 py-24 sm:px-6">
             <p className="label">§ V — Built for</p>
-            <div className="mt-10 grid gap-px border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-10 grid grid-cols-1 gap-px border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4">
               {[
                 ["Freelancers & clients", "Get paid on delivery, not on goodwill. Clients pay only for what meets the brief."],
                 ["Peer-to-peer deals", "Selling a domain, a used camera or a custom commission to someone you met online."],
@@ -258,7 +258,7 @@ export default async function Home() {
         </section>
 
         {/* ───────────── Spec sheet */}
-        <section className="mx-auto grid max-w-[1320px] gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:py-28">
+        <section className="mx-auto grid grid-cols-1 max-w-[1320px] gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:py-28">
           <div>
             <p className="label">§ VI — Under the hood</p>
             <h2 className="display mt-6 text-[clamp(2.5rem,5vw,4rem)]">Open, verifiable, small.</h2>
@@ -338,7 +338,7 @@ function Specimen() {
           ))}
         </div>
       </div>
-      <div className="absolute right-0 top-[38%] text-seal animate-stamp [animation-delay:700ms]">
+      <div className="absolute right-[-6%] top-[40%] origin-top-right scale-[0.72] text-seal animate-stamp [animation-delay:700ms] sm:right-0 sm:top-[38%] sm:scale-100">
         <Seal seed="42:specimen" number={42} size={170} />
       </div>
       <div className="sheet absolute bottom-2 left-[14%] w-[80%] rotate-[2deg] px-6 py-5 animate-rise [animation-delay:350ms]">

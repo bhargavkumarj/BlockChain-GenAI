@@ -63,7 +63,7 @@ export function DeliveryView({ agreement, milestone }: { agreement: AgreementVie
       </div>
       {data.note && <p className="whitespace-pre-line leading-relaxed text-ink-2">{data.note}</p>}
       {data.files.length > 0 && (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {data.files.map((f) => (
             <FileCard key={f.cid} file={f} />
           ))}
@@ -198,7 +198,7 @@ function Filing({ n, by, at, cid, role, you }: { n: number; by: string; at: numb
         <>
           <p className="mt-2 whitespace-pre-line text-[0.95rem] leading-relaxed text-ink-2">{data.statement}</p>
           {data.files.length > 0 && (
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {data.files.map((f) => (
                 <FileCard key={f.cid} file={f} />
               ))}

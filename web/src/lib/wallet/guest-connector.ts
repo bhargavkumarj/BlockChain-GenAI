@@ -80,7 +80,8 @@ export function guestWallet() {
           return account().signMessage({ message: { raw: p[0] as Hex } });
         case "eth_signTypedData_v4": {
           const typed = typeof p[1] === "string" ? JSON.parse(p[1]) : p[1];
-          const { EIP712Domain: _domain, ...types } = typed.types;
+          const types = { ...typed.types };
+          delete types.EIP712Domain; // viem derives the domain type itself
           return account().signTypedData({ ...typed, types });
         }
         case "wallet_switchEthereumChain":
