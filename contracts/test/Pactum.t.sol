@@ -110,7 +110,11 @@ contract PactumTest is Harness {
 
     // ───────────────────────────────────────────────────────── helpers
 
-    function _params(uint128[] memory amounts, bool appeals) internal view returns (Pactum.CreateParams memory p) {
+    function _params(uint128[] memory amounts, bool appeals)
+        internal
+        view
+        returns (Pactum.CreateParams memory p)
+    {
         uint64[] memory due = new uint64[](amounts.length);
         for (uint256 i; i < amounts.length; ++i) {
             due[i] = uint64(block.timestamp + (i + 1) * 7 days);
@@ -229,7 +233,9 @@ contract PactumTest is Harness {
         uint256 deadline = block.timestamp + 1 hours;
         bytes32 structHash = keccak256(
             abi.encode(
-                keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"),
+                keccak256(
+                    "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
+                ),
                 payer,
                 address(pactum),
                 uint256(250e6),

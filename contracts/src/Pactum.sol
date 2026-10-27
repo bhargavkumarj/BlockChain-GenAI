@@ -161,9 +161,15 @@ contract Pactum is EIP712, ReentrancyGuardTransient, Ownable2Step {
     );
     event RulingAppealed(uint256 indexed id, uint256 indexed milestone, address indexed by);
     event AppealResolved(uint256 indexed id, uint256 indexed milestone, uint16 providerBps, string rulingCID);
-    event SettlementOffered(uint256 indexed id, uint256 indexed milestone, address indexed by, uint16 providerBps);
+    event SettlementOffered(
+        uint256 indexed id, uint256 indexed milestone, address indexed by, uint16 providerBps
+    );
     event MilestoneResolved(
-        uint256 indexed id, uint256 indexed milestone, uint16 providerBps, uint256 toProvider, uint256 toClient
+        uint256 indexed id,
+        uint256 indexed milestone,
+        uint16 providerBps,
+        uint256 toProvider,
+        uint256 toClient
     );
     event Credited(address indexed token, address indexed account, uint256 amount);
     event FeeUpdated(uint16 feeBps, address feeRecipient);
@@ -193,10 +199,7 @@ contract Pactum is EIP712, ReentrancyGuardTransient, Ownable2Step {
 
     // ─────────────────────────────────────────────────────────────── Setup
 
-    constructor(address owner_, uint16 feeBps_, address feeRecipient_)
-        EIP712("Pactum", "1")
-        Ownable(owner_)
-    {
+    constructor(address owner_, uint16 feeBps_, address feeRecipient_) EIP712("Pactum", "1") Ownable(owner_) {
         _setFee(feeBps_, feeRecipient_);
     }
 
@@ -215,7 +218,8 @@ contract Pactum is EIP712, ReentrancyGuardTransient, Ownable2Step {
         returns (uint256 id)
     {
         if (p.token == address(0)) revert UnsupportedToken();
-        try IERC20Permit(p.token).permit(msg.sender, address(this), _sum(p.amounts), deadline, v, r, s) {} catch {}
+        try IERC20Permit(p.token).permit(msg.sender, address(this), _sum(p.amounts), deadline, v, r, s) {}
+            catch {}
         id = _create(p);
     }
 
@@ -488,8 +492,12 @@ contract Pactum is EIP712, ReentrancyGuardTransient, Ownable2Step {
     function _create(CreateParams calldata p) private returns (uint256 id) {
         uint256 n = p.amounts.length;
         if (n == 0 || n > MAX_MILESTONES || p.dueBy.length != n) revert InvalidParams();
-        if (p.provider == address(0) || p.provider == msg.sender || p.arbiter == address(0)) revert InvalidParams();
-        if (p.reviewPeriod == 0 || p.responseWindow == 0 || bytes(p.termsCID).length == 0) revert InvalidParams();
+        if (p.provider == address(0) || p.provider == msg.sender || p.arbiter == address(0)) {
+            revert InvalidParams();
+        }
+        if (p.reviewPeriod == 0 || p.responseWindow == 0 || bytes(p.termsCID).length == 0) {
+            revert InvalidParams();
+        }
         // Appeals need both a court and a window; without a court rulings are final immediately.
         if ((p.appealCourt == address(0)) != (p.appealWindow == 0)) revert InvalidParams();
 
@@ -668,7 +676,11 @@ contract Pactum is EIP712, ReentrancyGuardTransient, Ownable2Step {
         if (a.client == address(0)) revert UnknownAgreement();
     }
 
-    function _active(uint256 id, uint256 index) private view returns (Agreement storage a, Milestone storage m) {
+    function _active(uint256 id, uint256 index)
+        private
+        view
+        returns (Agreement storage a, Milestone storage m)
+    {
         a = _agreement(id);
         if (a.status != Status.Active) revert WrongStatus();
         if (index >= _milestones[id].length) revert BadMilestone();

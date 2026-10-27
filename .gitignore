@@ -21,3 +21,5 @@ web/playwright-report/
 *.tsbuildinfo
 .vercel
 contracts/deployments/31337.json
+e2e-shots/
+web/e2e/shots/

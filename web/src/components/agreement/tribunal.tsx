@@ -291,16 +291,18 @@ export function AwardScale({ shares, median }: { shares: number[]; median: numbe
           </span>
         ))}
         {shares.map((s, i) => {
-          // Awards within a few points of an earlier one are lifted a row so their labels never collide.
+          // Every award gets a marker on the line; labels of awards within a few points of an earlier one are
+          // lifted a row so they never collide.
           const level = shares.slice(0, i).filter((other) => Math.abs(other - s) < 6).length;
           return (
-            <span
-              key={i}
-              className="absolute -translate-x-1/2 text-center font-mono text-[0.65rem] text-ink-2 transition-[left] duration-700"
-              style={{ left: `${s}%`, bottom: 4 + level * 14 }}
-            >
-              {JURORS[i]?.seat}
-              {level === 0 && <span className="mx-auto mt-1 block size-2 rotate-45 bg-ink" />}
+            <span key={i} className="absolute top-0" style={{ left: `${s}%` }}>
+              <span className="absolute -top-1 block size-2 -translate-x-1/2 rotate-45 bg-ink" />
+              <span
+                className="absolute -translate-x-1/2 font-mono text-[0.65rem] text-ink-2"
+                style={{ bottom: 10 + level * 13 }}
+              >
+                {JURORS[i]?.seat}
+              </span>
             </span>
           );
         })}

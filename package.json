@@ -3,14 +3,20 @@
   "private": true,
   "description": "Pactum: AI-drafted agreements, on-chain escrow, and an AI tribunal for disputes.",
   "packageManager": "pnpm@10.28.0",
-  "engines": { "node": ">=20.9" },
+  "engines": {
+    "node": ">=20.9"
+  },
   "scripts": {
-    "contracts:build": "pnpm --filter @pactum/contracts build",
-    "contracts:test": "pnpm --filter @pactum/contracts test",
+    "devnet": "node scripts/devnet.mjs",
     "dev": "pnpm --filter @pactum/web dev",
     "build": "pnpm --filter @pactum/web build",
+    "start": "pnpm --filter @pactum/web start",
     "lint": "pnpm --filter @pactum/web lint",
     "typecheck": "pnpm --filter @pactum/web typecheck",
-    "test": "pnpm -r test"
+    "test": "pnpm --filter @pactum/web test && pnpm --filter @pactum/contracts test",
+    "e2e": "pnpm --filter @pactum/web e2e",
+    "contracts:build": "pnpm --filter @pactum/contracts build",
+    "contracts:test": "pnpm --filter @pactum/contracts test",
+    "contracts:deploy": "pnpm --filter @pactum/contracts deploy"
   }
 }

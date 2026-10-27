@@ -20,7 +20,14 @@ contract Handler {
 
     uint256 public calls;
 
-    constructor(Pactum pactum_, TestUSD usd_, address client_, address provider_, address treasury_, uint256 key) {
+    constructor(
+        Pactum pactum_,
+        TestUSD usd_,
+        address client_,
+        address provider_,
+        address treasury_,
+        uint256 key
+    ) {
         pactum = pactum_;
         usd = usd_;
         client = client_;
@@ -189,7 +196,9 @@ contract PactumInvariantTest is Harness {
             }
         }
         vm.assertEq(
-            usd.balanceOf(address(pactum)), open + pactum.owed(address(usd), treasury), "escrow exactly backed"
+            usd.balanceOf(address(pactum)),
+            open + pactum.owed(address(usd), treasury),
+            "escrow exactly backed"
         );
     }
 
