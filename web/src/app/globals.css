@@ -1,0 +1,436 @@
+@import "tailwindcss";
+
+/*
+ * Pactum design tokens — "paper & ink".
+ * Warm paper, near-black ink, one vermilion seal colour used sparingly, ledger green for money that moved.
+ * Raw values live on :root / [data-theme] so components read one set of semantic names in both themes.
+ */
+:root {
+  --paper: #f3efe6;
+  --paper-2: #ebe6da;
+  --paper-3: #e2dccd;
+  --sheet: #faf8f3;
+  --ink: #15130f;
+  --ink-2: #3a3731;
+  --ink-3: #6f6b61;
+  --ink-4: #9a958a;
+  --rule: #d6cfbf;
+  --rule-strong: #b9b09c;
+  --seal: #cf3b1d;
+  --seal-2: #a92c12;
+  --seal-wash: #f4d9cf;
+  --ledger: #1d6a4b;
+  --ledger-wash: #d5e8dc;
+  --amber: #a8681a;
+  --amber-wash: #f2e2c4;
+  --ink-blue: #2b4a8b;
+  --shadow: 21 19 15;
+  --grain-blend: multiply;
+  --grain-opacity: 0.06;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --paper: #11100d;
+  --paper-2: #181713;
+  --paper-3: #201e19;
+  --sheet: #1b1a16;
+  --ink: #ede8dc;
+  --ink-2: #cdc7b8;
+  --ink-3: #958f81;
+  --ink-4: #6c675c;
+  --rule: #2c2a24;
+  --rule-strong: #3d3a32;
+  --seal: #f0552f;
+  --seal-2: #ff7652;
+  --seal-wash: #3a1d14;
+  --ledger: #4cc28c;
+  --ledger-wash: #13291f;
+  --amber: #e2a24a;
+  --amber-wash: #2e2313;
+  --ink-blue: #8aa7e8;
+  --shadow: 0 0 0;
+  --grain-blend: screen;
+  --grain-opacity: 0.035;
+  color-scheme: dark;
+}
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-paper-3: var(--paper-3);
+  --color-sheet: var(--sheet);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-seal: var(--seal);
+  --color-seal-2: var(--seal-2);
+  --color-seal-wash: var(--seal-wash);
+  --color-ledger: var(--ledger);
+  --color-ledger-wash: var(--ledger-wash);
+  --color-amber: var(--amber);
+  --color-amber-wash: var(--amber-wash);
+  --color-ink-blue: var(--ink-blue);
+
+  --font-serif: var(--font-instrument), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+@layer base {
+  html {
+    background: var(--paper);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Paper grain: a single fixed SVG noise layer, cheap to composite. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: var(--grain-blend);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--seal) 28%, transparent);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--seal);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ───────────────────────────────────────────── Primitives */
+
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+@utility hairline {
+  border-color: var(--rule);
+}
+
+@utility display {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+}
+
+@utility sheet {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  box-shadow:
+    0 1px 0 rgb(var(--shadow) / 0.04),
+    0 24px 48px -28px rgb(var(--shadow) / 0.28);
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding: 0 1.125rem;
+    border: 1px solid var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition:
+      background-color 160ms var(--ease-out-quart),
+      color 160ms var(--ease-out-quart),
+      border-color 160ms var(--ease-out-quart),
+      transform 160ms var(--ease-out-quart);
+    user-select: none;
+  }
+  .btn:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .btn-ink {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .btn-ink:hover:not(:disabled) {
+    background: var(--seal);
+    border-color: var(--seal);
+    color: #fff;
+  }
+  .btn-seal {
+    background: var(--seal);
+    border-color: var(--seal);
+    color: #fff;
+  }
+  .btn-seal:hover:not(:disabled) {
+    background: var(--seal-2);
+    border-color: var(--seal-2);
+  }
+  .btn-line {
+    background: transparent;
+    color: var(--ink);
+  }
+  .btn-line:hover:not(:disabled) {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .btn-quiet {
+    border-color: transparent;
+    background: transparent;
+    color: var(--ink-2);
+    padding: 0 0.75rem;
+  }
+  .btn-quiet:hover:not(:disabled) {
+    color: var(--ink);
+    background: var(--paper-2);
+  }
+  .btn-sm {
+    height: 2.125rem;
+    padding: 0 0.8rem;
+    font-size: 0.6875rem;
+  }
+
+  .field {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--rule-strong);
+    padding: 0.5rem 0;
+    transition: border-color 160ms var(--ease-out-quart);
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--ink);
+  }
+  .field::placeholder {
+    color: var(--ink-4);
+  }
+
+  .box-field {
+    width: 100%;
+    background: var(--sheet);
+    border: 1px solid var(--rule-strong);
+    padding: 0.75rem 0.875rem;
+    transition: border-color 160ms var(--ease-out-quart);
+  }
+  .box-field:focus {
+    outline: none;
+    border-color: var(--ink);
+  }
+  .box-field::placeholder {
+    color: var(--ink-4);
+  }
+
+  .link {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--rule-strong);
+    transition: text-decoration-color 160ms;
+  }
+  .link:hover {
+    text-decoration-color: var(--seal);
+  }
+
+  /* Typeset agreement body (terms, rulings). */
+  .doc {
+    font-family: var(--font-sans);
+    font-size: 0.975rem;
+    line-height: 1.65;
+    color: var(--ink-2);
+  }
+  .doc h3 {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+}
+
+/* ───────────────────────────────────────────── Motion */
+
+@keyframes stamp {
+  0% {
+    transform: scale(1.9) rotate(-18deg);
+    opacity: 0;
+    filter: blur(6px);
+  }
+  55% {
+    transform: scale(0.94) rotate(-9deg);
+    opacity: 1;
+    filter: blur(0);
+  }
+  75% {
+    transform: scale(1.03) rotate(-11deg);
+  }
+  100% {
+    transform: scale(1) rotate(-10deg);
+  }
+}
+
+@keyframes ink-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes sweep {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-stamp {
+  animation: stamp 900ms var(--ease-out-quart) both;
+}
+.animate-ink-in {
+  animation: ink-in 520ms var(--ease-out-quart) both;
+}
+.animate-rise {
+  animation: rise 700ms var(--ease-out-quart) both;
+}
+.caret::after {
+  content: "";
+  display: inline-block;
+  width: 0.5ch;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: -0.12em;
+  background: var(--seal);
+  animation: caret 1s steps(1) infinite;
+}
+.pulse-dot {
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+.marquee-track {
+  animation: marquee 60s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--paper-2) 0%, var(--paper-3) 50%, var(--paper-2) 100%);
+  background-size: 200% 100%;
+  animation: sweep 1.6s linear infinite;
+}

@@ -1,0 +1,23 @@
+node_modules/
+.pnpm-store/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+
+# contracts
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
+# web
+web/.next/
+web/out/
+web/.data/
+web/next-env.d.ts
+web/test-results/
+web/playwright-report/
+*.tsbuildinfo
+.vercel
+contracts/deployments/31337.json
