@@ -190,7 +190,7 @@ pnpm dev             # http://localhost:3000  (in a second terminal)
 ```
 
 Then open the app, click **Connect → Instant guest wallet** (auto-funded), draft something, choose **Hire Ada**, and seal it.
-Add `ANTHROPIC_API_KEY` to `web/.env.local` for live Claude agents; without it the simulator runs.
+Add `ANTHROPIC_API_KEY` (or `OPENROUTER_API_KEY`) to `web/.env.local` for live Claude agents; without one the simulator runs.
 
 | Command | What it does |
 |---|---|

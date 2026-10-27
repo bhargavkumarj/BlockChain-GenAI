@@ -19,7 +19,7 @@ export function StatusStrip() {
   if (data?.ai.mode === "simulated") {
     return (
       <div className="border-b border-rule bg-paper-2 px-4 py-2 text-center font-mono text-[0.68rem] uppercase tracking-[0.08em] text-ink-3">
-        AI is running in simulation mode on this deployment · add an Anthropic API key for live Claude agents
+        AI is running in simulation mode on this deployment · add an Anthropic or OpenRouter API key for live Claude agents
       </div>
     );
   }

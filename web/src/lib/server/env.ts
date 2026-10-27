@@ -10,6 +10,8 @@ function key(value: string | undefined): Hex | undefined {
 export const serverEnv = {
   rpcUrl: process.env.RPC_URL || RPC_URL,
   anthropicKey: process.env.ANTHROPIC_API_KEY,
+  /** Claude through OpenRouter's Anthropic-compatible Messages API. Used when no Anthropic key is set. */
+  openRouterKey: process.env.OPENROUTER_API_KEY,
   /** Force the deterministic simulator even when a key is present (tests, offline demos). */
   forceSimulatedAI: process.env.AI_SIMULATE === "1",
   model: process.env.AI_MODEL || "claude-opus-5-5",
@@ -22,4 +24,8 @@ export const serverEnv = {
   localDataDir: process.env.PACTUM_DATA_DIR || ".data",
 };
 
-export const isSimulatedAI = () => serverEnv.forceSimulatedAI || !serverEnv.anthropicKey;
+/** Which API serves Claude. A direct Anthropic key wins when both are set. */
+export const aiProvider = () =>
+  serverEnv.anthropicKey ? ("anthropic" as const) : serverEnv.openRouterKey ? ("openrouter" as const) : null;
+
+export const isSimulatedAI = () => serverEnv.forceSimulatedAI || !aiProvider();

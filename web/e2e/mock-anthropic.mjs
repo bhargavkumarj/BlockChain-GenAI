@@ -2,10 +2,12 @@
 //
 //   node e2e/mock-anthropic.mjs            # listens on :4010
 //   ANTHROPIC_BASE_URL=http://127.0.0.1:4010 ANTHROPIC_API_KEY=sk-mock AI_SIMULATE=0 pnpm start
+//   OPENROUTER_BASE_URL=http://127.0.0.1:4010/api OPENROUTER_API_KEY=sk-or-mock pnpm start   # OpenRouter path
 //
 // It streams genuine SSE events (a thinking block, then text deltas), checks each request has the shape the
-// app promises (model, fallback beta, structured-output schema), and answers per agent based on the system
-// prompt. Every request is logged so the request contract can be inspected.
+// app promises (model, fallback beta, structured-output schema; on the OpenRouter path bearer auth, an
+// OpenRouter model slug and no Anthropic-only fields), and answers per agent based on the system prompt.
+// Every request is logged so the request contract can be inspected.
 import { createServer } from "node:http";
 
 const PORT = Number(process.env.MOCK_PORT ?? 4010);
@@ -117,11 +119,19 @@ function route(system) {
   return "unknown";
 }
 
-function check(kind, req, body) {
+function check(kind, req, body, openRouter) {
   const issues = [];
   if (!body.model) issues.push("missing model");
-  if (!req.headers["anthropic-beta"]?.includes("server-side-fallback-2026-07-01")) issues.push("missing fallback beta header");
-  if (body.fallbacks !== "default") issues.push("fallbacks is not 'default'");
+  if (openRouter) {
+    if (!req.headers.authorization?.startsWith("Bearer ")) issues.push("missing bearer token");
+    if (!body.model?.startsWith("anthropic/")) issues.push(`model ${body.model} is not an OpenRouter slug`);
+    if (body.fallbacks !== undefined || req.headers["anthropic-beta"]?.includes("server-side-fallback")) {
+      issues.push("sends Anthropic-only fallback fields");
+    }
+  } else {
+    if (!req.headers["anthropic-beta"]?.includes("server-side-fallback-2026-07-01")) issues.push("missing fallback beta header");
+    if (body.fallbacks !== "default") issues.push("fallbacks is not 'default'");
+  }
   if (!body.stream) issues.push("not streaming");
   if (body.temperature !== undefined) issues.push("sends temperature");
   const format = body.output_config?.format;
@@ -147,7 +157,8 @@ const server = createServer((req, res) => {
     res.writeHead(200, { "content-type": "application/json" });
     return res.end(JSON.stringify(problems));
   }
-  if (req.method !== "POST" || !req.url?.startsWith("/v1/messages")) {
+  const openRouter = req.url?.startsWith("/api/v1/messages");
+  if (req.method !== "POST" || !(openRouter || req.url?.startsWith("/v1/messages"))) {
     res.writeHead(404);
     return res.end();
   }
@@ -157,14 +168,14 @@ const server = createServer((req, res) => {
     const body = JSON.parse(raw);
     const system = typeof body.system === "string" ? body.system : (body.system ?? []).map((b) => b.text).join("\n");
     const kind = route(system);
-    const issues = check(kind, req, body);
+    const issues = check(kind, req, body, openRouter);
     const text =
       kind === "clerk"
         ? "Under § 1 (Revisions) you get one round of revisions per milestone, requested within the review period."
         : JSON.stringify((answers[kind] ?? (() => ({})))(system));
     console.log(
       `${new Date().toISOString().slice(11, 19)} ${kind.padEnd(9)} model=${body.model} effort=${body.output_config?.effort} ` +
-        `beta=${req.headers["anthropic-beta"]} schema=${Boolean(body.output_config?.format)} ${issues.length ? `⚠ ${issues.join("; ")}` : "ok"}`,
+        `${openRouter ? "via=openrouter " : ""}beta=${req.headers["anthropic-beta"]} schema=${Boolean(body.output_config?.format)} ${issues.length ? `⚠ ${issues.join("; ")}` : "ok"}`,
     );
 
     const chunks = text.match(/[\s\S]{1,40}/g) ?? [];

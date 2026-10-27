@@ -18,7 +18,8 @@ sends small gas drips to guest wallets.
 
 Also create:
 
-- an **Anthropic API key**: [console.anthropic.com](https://console.anthropic.com)
+- an **Anthropic API key** from [console.anthropic.com](https://console.anthropic.com), **or** an **OpenRouter API key** from
+  [openrouter.ai/keys](https://openrouter.ai/keys). Either one runs the same Claude models; see [Using OpenRouter](#using-openrouter)
 - a **Pinata JWT**: [app.pinata.cloud](https://app.pinata.cloud) → API Keys → New key (pinning permissions)
 - an **Upstash Redis** database (or add the Upstash integration from the Vercel Marketplace later)
 
@@ -67,7 +68,8 @@ cast send <PACTUM_ADDRESS> "setAppealFee(uint256)" 1000000000000000 --rpc-url ht
 | `NEXT_PUBLIC_SITE_URL` | your production URL |
 | `NEXT_PUBLIC_RPC_URL` | optional: an Alchemy / QuickNode Base Sepolia URL for higher rate limits |
 | `NEXT_PUBLIC_APPEAL_COURT` | optional: address of the appeal court |
-| `ANTHROPIC_API_KEY` | your key |
+| `ANTHROPIC_API_KEY` | your Anthropic key (or leave it out and set `OPENROUTER_API_KEY`) |
+| `OPENROUTER_API_KEY` | your OpenRouter key, if you use OpenRouter instead of Anthropic |
 | `ARBITER_PRIVATE_KEY` | arbiter key |
 | `AGENT_PRIVATE_KEY` | agent key |
 | `PINATA_JWT` | your JWT |
@@ -86,8 +88,20 @@ and the keys never reach the browser.
 4. Hire Ada → Seal → the seal stamps and you land on the agreement; Ada accepts and delivers within a minute.
 5. Dispute the delivery → Ada files a statement → **Call to order** → execute the ruling → `/precedents` lists it.
 
-`GET /api/status` reports what the deployment is running with (AI mode and model, IPFS backend, KV backend, tribunal and agent
-availability).
+`GET /api/status` reports what the deployment is running with (AI mode, provider and model, IPFS backend, KV backend, tribunal and
+agent availability).
+
+## Using OpenRouter
+
+Set `OPENROUTER_API_KEY` instead of `ANTHROPIC_API_KEY`. Pactum then sends the same requests to OpenRouter's
+Anthropic-compatible Messages API (`https://openrouter.ai/api`), so structured outputs, effort and prompt caching work as before.
+
+- **Model names** are mapped for you: the default `claude-opus-5-5` becomes `anthropic/claude-opus-5.5`. `AI_MODEL` and
+  `AI_JUROR_MODELS` accept either form, or any OpenRouter slug.
+- **Refusal fallbacks** (Anthropic's server-side `fallbacks` parameter) are only sent to Anthropic directly; OpenRouter does its
+  own routing.
+- If both keys are set, the Anthropic key wins.
+- `/api/status` shows `"provider": "openrouter"` when it is active.
 
 ## Operating notes
 

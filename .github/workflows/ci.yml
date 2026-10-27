@@ -79,6 +79,15 @@ jobs:
         run: pnpm --filter @pactum/web exec playwright install --with-deps chromium
       - name: Draft → seal → deliver → dispute → tribunal → ruling → release
         run: BASE_URL=http://localhost:3000 SHOTS=e2e-shots pnpm e2e
+      - name: The same app serves Claude through OpenRouter
+        run: |
+          cd web
+          OPENROUTER_BASE_URL=http://127.0.0.1:4010/api OPENROUTER_API_KEY=sk-or-mock npx next start -p 3001 > ../app-openrouter.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:3001/api/status && break; sleep 1; done
+          curl -s http://localhost:3001/api/status | grep -q '"provider":"openrouter"'
+          curl -sN -X POST http://localhost:3001/api/ai/draft -H 'content-type: application/json' \
+            -d '{"prompt":"Logo design for a bakery, 300 tUSD, two revisions"}' | grep -q 'event: done'
+          grep -q 'via=openrouter' ../mock.log
       - name: Every model request honoured the API contract
         run: |
           cat mock.log
@@ -90,4 +99,5 @@ jobs:
           path: |
             web/e2e-shots
             app.log
+            app-openrouter.log
             mock.log

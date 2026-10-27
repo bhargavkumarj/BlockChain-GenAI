@@ -81,11 +81,11 @@ const block = [
   END,
 ].join("\n");
 
-// Keep anything the developer added (an ANTHROPIC_API_KEY, PINATA_JWT, …) and replace only our block.
+// Keep anything the developer added (an ANTHROPIC_API_KEY or OPENROUTER_API_KEY, PINATA_JWT, …) and replace only our block.
 let existing = existsSync(envPath) ? readFileSync(envPath, "utf8") : "";
 existing = existing.replace(new RegExp(`${START}[\\s\\S]*?${END}\\n?`), "").trimEnd();
-if (!/ANTHROPIC_API_KEY|AI_SIMULATE/.test(existing)) {
-  existing += `${existing ? "\n\n" : ""}# Add ANTHROPIC_API_KEY=… for live Claude agents. Without it the deterministic simulator runs.`;
+if (!/ANTHROPIC_API_KEY|OPENROUTER_API_KEY|AI_SIMULATE/.test(existing)) {
+  existing += `${existing ? "\n\n" : ""}# Add ANTHROPIC_API_KEY=… (or OPENROUTER_API_KEY=…) for live Claude agents. Without one the deterministic simulator runs.`;
 }
 writeFileSync(envPath, `${existing ? `${existing}\n\n` : ""}${block}\n`);
 

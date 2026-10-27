@@ -1,6 +1,6 @@
 import { AGENT_ADDRESS, ARBITER_ADDRESS, CHAIN_ID, IS_CONFIGURED, PACTUM_ADDRESS } from "@/lib/config";
 import { aiMode, modelName } from "@/lib/ai/engine";
-import { serverEnv } from "@/lib/server/env";
+import { aiProvider, serverEnv } from "@/lib/server/env";
 import { isDurableKV } from "@/lib/server/kv";
 import { usingPinata } from "@/lib/server/ipfs";
 
@@ -12,7 +12,7 @@ export async function GET() {
     chainId: CHAIN_ID,
     contracts: IS_CONFIGURED,
     pactum: PACTUM_ADDRESS ?? null,
-    ai: { mode: aiMode(), model: modelName() },
+    ai: { mode: aiMode(), provider: aiMode() === "live" ? aiProvider() : null, model: modelName() },
     ipfs: usingPinata() ? "pinata" : "local",
     kv: isDurableKV() ? "redis" : "memory",
     tribunal: Boolean(serverEnv.arbiterKey) && Boolean(ARBITER_ADDRESS),

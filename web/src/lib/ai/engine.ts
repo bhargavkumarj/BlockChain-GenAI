@@ -2,14 +2,17 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { z } from "zod";
-import { isSimulatedAI, serverEnv } from "@/lib/server/env";
+import { SITE_URL } from "@/lib/config";
+import { openRouterModelId } from "@/lib/model-id";
+import { aiProvider, isSimulatedAI, serverEnv } from "@/lib/server/env";
 
 /**
  * One entry point for every model call in Pactum.
  *
- * Live mode streams from Claude with structured outputs (JSON schema from Zod) and server-side refusal
- * fallbacks. Simulated mode — used when no API key is configured or AI_SIMULATE=1 — replays a deterministic
- * result through the same streaming callbacks, so the UI and tests behave identically offline.
+ * Live mode streams from Claude, directly from Anthropic or through OpenRouter's Anthropic-compatible
+ * Messages API, with structured outputs (JSON schema from Zod) and, on Anthropic, server-side refusal fallbacks.
+ * Simulated mode — used when no API key is configured or AI_SIMULATE=1 — replays a deterministic result
+ * through the same streaming callbacks, so the UI and tests behave identically offline.
  */
 
 export type Effort = "low" | "medium" | "high";
@@ -19,14 +22,30 @@ export class AIError extends Error {}
 
 let client: Anthropic | undefined;
 function anthropic() {
-  client ??= new Anthropic({ apiKey: serverEnv.anthropicKey, maxRetries: 2 });
+  client ??=
+    aiProvider() === "openrouter"
+      ? new Anthropic({
+          authToken: serverEnv.openRouterKey,
+          baseURL: process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api",
+          // Attribution shown in OpenRouter's activity log.
+          defaultHeaders: { "HTTP-Referer": SITE_URL, "X-Title": "Pactum" },
+          maxRetries: 2,
+        })
+      : new Anthropic({ apiKey: serverEnv.anthropicKey, maxRetries: 2 });
   return client;
 }
 
+/** The model id in the form the active provider expects. */
+const resolveModel = (model: string) => (aiProvider() === "openrouter" ? openRouterModelId(model) : model);
+
 export const aiMode = () => (isSimulatedAI() ? "simulated" : "live");
-export const modelName = () => (isSimulatedAI() ? "pactum-simulator" : serverEnv.model);
+export const modelName = () => (isSimulatedAI() ? "pactum-simulator" : resolveModel(serverEnv.model));
 
 const FALLBACK_BETA = "server-side-fallback-2026-07-01";
+
+/** Anthropic's server-side refusal fallback. OpenRouter's Messages API doesn't take it and routes on its own. */
+const fallbackParams = () =>
+  aiProvider() === "anthropic" ? { betas: [FALLBACK_BETA], fallbacks: "default" as const } : {};
 
 type ObjectOptions<T extends z.ZodType> = {
   system: string;
@@ -49,10 +68,9 @@ export async function generateObject<T extends z.ZodType>(opts: ObjectOptions<T>
 
   const stream = anthropic().beta.messages.stream(
     {
-      model: opts.model ?? serverEnv.model,
+      model: resolveModel(opts.model ?? serverEnv.model),
       max_tokens: opts.maxTokens ?? 16_000,
-      betas: [FALLBACK_BETA],
-      fallbacks: "default",
+      ...fallbackParams(),
       system: opts.system,
       messages: [{ role: "user", content: opts.content }],
       output_config: { effort: opts.effort, format: betaZodOutputFormat(opts.schema) },
@@ -95,10 +113,9 @@ export async function generateText(opts: TextOptions) {
   }
   const stream = anthropic().beta.messages.stream(
     {
-      model: serverEnv.model,
+      model: resolveModel(serverEnv.model),
       max_tokens: opts.maxTokens ?? 4_000,
-      betas: [FALLBACK_BETA],
-      fallbacks: "default",
+      ...fallbackParams(),
       system: opts.system,
       messages: opts.messages,
       output_config: { effort: opts.effort },
