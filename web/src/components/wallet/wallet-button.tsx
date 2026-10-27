@@ -277,7 +277,7 @@ function WalletOption({
       <span className="flex-1">
         <span className="flex items-center gap-2">
           <span className="font-medium">{title}</span>
-          {tag && <span className="bg-seal px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-white">{tag}</span>}
+          {tag && <span className="bg-seal px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-on-seal">{tag}</span>}
         </span>
         <span className="mt-1 block text-sm leading-snug text-ink-3">{busy ? <Dots label="Creating" /> : description}</span>
       </span>

@@ -13,17 +13,19 @@ function parseId(raw: string) {
 export async function generateMetadata(props: PageProps<"/a/[id]">): Promise<Metadata> {
   const id = parseId((await props.params).id);
   if (!id) return { title: "Agreement" };
-  try {
+  const fallback: Metadata = {
+    title: `Agreement ${agreementNumber(id)}`,
+    description: "A Pactum agreement: escrowed on-chain, adjudicated by an AI tribunal.",
+  };
+  // Metadata must never hold up the page: a slow RPC or IPFS gateway falls back to a generic title.
+  const lookup = (async (): Promise<Metadata> => {
     const agreement = await readAgreement(id);
     const terms = agreement ? await loadTerms(agreement.termsCID) : null;
-    const title = terms?.draft.title ?? `Agreement ${agreementNumber(id)}`;
-    return {
-      title,
-      description: terms?.draft.summary ?? "A Pactum agreement: escrowed on-chain, adjudicated by an AI tribunal.",
-    };
-  } catch {
-    return { title: `Agreement ${agreementNumber(id)}` };
-  }
+    if (!terms) return fallback;
+    return { title: terms.draft.title, description: terms.draft.summary };
+  })().catch(() => fallback);
+  const timeout = new Promise<Metadata>((resolve) => setTimeout(() => resolve(fallback), 1500));
+  return Promise.race([lookup, timeout]);
 }
 
 export default async function Page(props: PageProps<"/a/[id]">) {

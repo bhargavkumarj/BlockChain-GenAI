@@ -143,7 +143,7 @@ function Row({ agreement, role }: { agreement: AgreementView; role: Role }) {
           )}
         </div>
         <div className="col-span-2 flex flex-wrap items-center gap-3 sm:col-span-1 sm:justify-end">
-          {yourMove && <span className="bg-seal px-2 py-1 font-mono text-[0.62rem] uppercase tracking-wider text-white">Your move</span>}
+          {yourMove && <span className="bg-seal px-2 py-1 font-mono text-[0.62rem] uppercase tracking-wider text-on-seal">Your move</span>}
           <Pill tone={phase.tone}>{phase.label}</Pill>
           <span className="tabular w-32 text-right font-mono">
             {formatAmount(agreement.total, token.decimals)} {token.symbol}

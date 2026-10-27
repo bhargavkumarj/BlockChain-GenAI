@@ -12,16 +12,17 @@
   --sheet: #faf8f3;
   --ink: #15130f;
   --ink-2: #3a3731;
-  --ink-3: #6f6b61;
-  --ink-4: #9a958a;
+  --ink-3: #57534b;
+  --ink-4: #6a675f;
   --rule: #d6cfbf;
   --rule-strong: #b9b09c;
-  --seal: #cf3b1d;
-  --seal-2: #a92c12;
+  --seal: #be361b;
+  --seal-2: #9c2a12;
+  --on-seal: #ffffff;
   --seal-wash: #f4d9cf;
   --ledger: #1d6a4b;
   --ledger-wash: #d5e8dc;
-  --amber: #a8681a;
+  --amber: #925a17;
   --amber-wash: #f2e2c4;
   --ink-blue: #2b4a8b;
   --shadow: 21 19 15;
@@ -37,12 +38,13 @@
   --sheet: #1b1a16;
   --ink: #ede8dc;
   --ink-2: #cdc7b8;
-  --ink-3: #958f81;
-  --ink-4: #6c675c;
+  --ink-3: #a59f91;
+  --ink-4: #868279;
   --rule: #2c2a24;
   --rule-strong: #3d3a32;
   --seal: #f0552f;
   --seal-2: #ff7652;
+  --on-seal: #11100d;
   --seal-wash: #3a1d14;
   --ledger: #4cc28c;
   --ledger-wash: #13291f;
@@ -71,6 +73,7 @@
   --color-seal: var(--seal);
   --color-seal-2: var(--seal-2);
   --color-seal-wash: var(--seal-wash);
+  --color-on-seal: var(--on-seal);
   --color-ledger: var(--ledger);
   --color-ledger-wash: var(--ledger-wash);
   --color-amber: var(--amber);
@@ -233,12 +236,12 @@
   .btn-ink:hover:not(:disabled) {
     background: var(--seal);
     border-color: var(--seal);
-    color: #fff;
+    color: var(--on-seal);
   }
   .btn-seal {
     background: var(--seal);
     border-color: var(--seal);
-    color: #fff;
+    color: var(--on-seal);
   }
   .btn-seal:hover:not(:disabled) {
     background: var(--seal-2);

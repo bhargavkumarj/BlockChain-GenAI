@@ -36,9 +36,27 @@ export class TribunalBusy extends Error {}
 const rulingKey = (a: AgreementView, index: number) =>
   `ruling:${CHAIN_ID}:${requirePactum().toLowerCase()}:${a.id}:${index}:${a.milestones[index]!.disputedAt}`;
 
-/** A ruling already issued for this exact dispute, if any. */
+const RULING_VALIDITY = 7 * 24 * 3600;
+
+/**
+ * A ruling already issued for this exact dispute, if any. If nobody executed it before its signature expired,
+ * the same award and reasoning are re-signed with a fresh deadline: the outcome never changes, so waiting out
+ * the deadline is not a way to re-roll the jurors.
+ */
 export async function existingRuling(a: AgreementView, index: number) {
-  return kv.get<SignedRuling>(rulingKey(a, index));
+  const key = rulingKey(a, index);
+  const ruling = await kv.get<SignedRuling>(key);
+  if (!ruling) return null;
+  const now = await latestTimestamp();
+  if (ruling.deadline > now + 3600) return ruling;
+  const deadline = now + RULING_VALIDITY;
+  const refreshed: SignedRuling = {
+    ...ruling,
+    deadline,
+    signature: await signRuling({ ...ruling, deadline }),
+  };
+  await kv.set(key, refreshed);
+  return refreshed;
 }
 
 
@@ -53,7 +71,7 @@ export async function existingRuling(a: AgreementView, index: number) {
  */
 export async function convene(a: AgreementView, index: number, send: SendFn, signal: AbortSignal) {
   const key = rulingKey(a, index);
-  const cached = await kv.get<SignedRuling>(key);
+  const cached = await existingRuling(a, index);
   if (cached) {
     send("ruling", { ...cached, cached: true });
     return cached;
@@ -161,7 +179,7 @@ export async function convene(a: AgreementView, index: number, send: SendFn, sig
     send("status", { stage: "seal", text: "Pinning the ruling to IPFS and signing it" });
     const { cid } = await pinJSON(doc, `pactum-ruling-${a.id}-${index}`);
 
-    const deadline = (await latestTimestamp()) + 7 * 24 * 3600;
+    const deadline = (await latestTimestamp()) + RULING_VALIDITY;
     const ruling: SignedRuling = {
       agreementId: a.id,
       milestone: index,

@@ -199,7 +199,7 @@ export function SealDialog({
                 <li key={s.id} className="grid grid-cols-[1.75rem_1fr] gap-3">
                   <span
                     className={`grid size-7 place-items-center border font-mono text-xs ${
-                      isDone ? "border-ledger bg-ledger text-white" : active ? "border-ink" : "border-rule-strong text-ink-4"
+                      isDone ? "border-ledger bg-ledger text-sheet" : active ? "border-ink" : "border-rule-strong text-ink-4"
                     }`}
                   >
                     {isDone ? "✓" : i + 1}
